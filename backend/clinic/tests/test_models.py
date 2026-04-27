@@ -1,9 +1,10 @@
-from django.test import TestCase
 from django.db import IntegrityError
+from django.test import TestCase
 from django.utils import timezone
 
-from clinic.models import Clinic, User, Patient, Clinician, Appointment, AppointmentClinician
-from .helpers import make_clinic, make_user, make_patient
+from clinic.models import Appointment, AppointmentClinician, Clinician, Patient, User
+
+from .helpers import make_clinic, make_patient, make_user
 
 
 class PatientModelTest(TestCase):

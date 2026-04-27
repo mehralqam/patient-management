@@ -1,9 +1,10 @@
 from django.utils import timezone
-from rest_framework.test import APITestCase
 from rest_framework import status
+from rest_framework.test import APITestCase
 
-from clinic.models import Clinician, Appointment, AppointmentClinician, Patient, User
-from .helpers import make_clinic, make_user, make_patient
+from clinic.models import Appointment, AppointmentClinician, Clinician, Patient, User
+
+from .helpers import make_clinic, make_patient, make_user
 
 
 class AuthenticationTest(APITestCase):

@@ -1,11 +1,12 @@
+from django.contrib.auth import authenticate
+from django.db.models import Prefetch
 from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
-from django.db.models import Prefetch
-from .models import Patient, Appointment
+
+from .models import Appointment, Patient
 from .serializers import PatientSerializer, PatientWriteSerializer
 
 

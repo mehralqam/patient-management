@@ -1,5 +1,4 @@
 # Python
-venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -13,3 +12,4 @@ build/
 
 # OS
 .DS_Store
+

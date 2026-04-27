@@ -96,8 +96,8 @@ Use this checklist to verify the implementation meets all assessment criteria.
 
 ### CI
 - [ ] GitHub Actions runs on push/PR to `main`
-- [ ] Backend job: spins up PostgreSQL, installs deps, runs `python manage.py test`
-- [ ] Frontend job: installs deps, runs `tsc --noEmit`
+- [ ] Backend job: spins up PostgreSQL, installs deps, runs `ruff check .`, then `python manage.py test`
+- [ ] Frontend job: installs deps, runs `tsc --noEmit`, then `npm run lint`
 
 ---
 

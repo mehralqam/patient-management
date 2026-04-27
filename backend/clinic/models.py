@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+
 
 class Clinic(models.Model):
     name = models.CharField(max_length=255)
@@ -76,3 +77,6 @@ class AppointmentClinician(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['appointment', 'clinician'], name='unique_appointment_clinician')
         ]
+
+    def __str__(self):
+        return f"{self.clinician} @ Appointment {self.appointment_id}"

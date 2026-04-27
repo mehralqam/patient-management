@@ -8,10 +8,16 @@ cd backend && python manage.py test          # run all tests
 cd backend && python manage.py migrate       # apply migrations
 cd backend && python manage.py seed          # seed test data (idempotent)
 cd backend && python manage.py makemigrations # generate migrations after model changes
+cd backend && ruff check .                   # lint (auto-fix with --fix) — requires local install
+cd backend && ruff format .                  # format code — requires local install
+
+# Lint via Docker (no local install needed)
+docker run --rm -v "$(pwd)/backend:/app" -w /app ghcr.io/astral-sh/ruff:latest check .
 
 # Frontend
 cd frontend && npm run dev                   # dev server (port 5173, proxies /api → 8000)
 cd frontend && npx tsc --noEmit             # typecheck
+cd frontend && npm run lint                  # lint
 
 # Docker
 docker compose up --build                   # full stack at http://localhost

@@ -1,4 +1,4 @@
-from clinic.models import Clinic, User, Patient
+from clinic.models import Clinic, Patient, User
 
 
 def make_clinic(name: str = "Test Clinic", address: str = "1 Main St") -> Clinic:

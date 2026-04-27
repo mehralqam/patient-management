@@ -124,10 +124,32 @@ pip install -r requirements.txt
 python manage.py test
 ```
 
-**Frontend type check:**
+**Frontend type check and lint:**
 
 ```bash
 cd frontend && npx tsc --noEmit
+cd frontend && npm run lint
+```
+
+**Backend lint (via Docker — no local install needed):**
+
+```bash
+# Lint
+docker run --rm -v "$(pwd)/backend:/app" -w /app ghcr.io/astral-sh/ruff:latest check .
+
+# Auto-fix
+docker run --rm -v "$(pwd)/backend:/app" -w /app ghcr.io/astral-sh/ruff:latest check . --fix
+
+# Format
+docker run --rm -v "$(pwd)/backend:/app" -w /app ghcr.io/astral-sh/ruff:latest format .
+```
+
+Or if you have ruff installed locally (`pip install ruff`):
+
+```bash
+cd backend && ruff check .        # lint
+cd backend && ruff check . --fix  # auto-fix
+cd backend && ruff format .       # format
 ```
 
 ---
@@ -207,5 +229,5 @@ Authorization: Token <token>
 
 GitHub Actions runs on push and PRs to `main`:
 
-- **Backend** — runs Django tests against a PostgreSQL service container
-- **Frontend** — TypeScript type check (`tsc --noEmit`)
+- **Backend** — lints with `ruff`, then runs Django tests against a PostgreSQL service container
+- **Frontend** — TypeScript type check (`tsc --noEmit`), then ESLint (`npm run lint`)
