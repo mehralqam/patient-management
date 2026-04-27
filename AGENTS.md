@@ -15,8 +15,10 @@ These rules apply when modifying or creating:
 - `backend/config/settings.py` — Django configuration
 - `backend/config/urls.py` — Root URL config and auth endpoint
 - `backend/clinic/management/commands/seed.py` — Test data seeder
-- `frontend/src/components/` — Login, PatientList, PatientForm
+- `frontend/src/components/` — Login, PatientList, PatientModal, ConfirmModal, Modal, Navbar, etc.
 - `frontend/src/api/` — API client and patient functions
+- `frontend/src/lib/toast.ts` — Toast notification utilities
+- `frontend/src/utils/` — Shared utilities (error handling, patient helpers)
 - `frontend/src/types/index.ts` — Shared TypeScript interfaces
 - `docker-compose.yml`, `backend/Dockerfile`, `backend/entrypoint.sh` — Container setup
 
@@ -84,10 +86,12 @@ Use this checklist to verify the implementation meets all assessment criteria.
 
 ### Frontend
 - [ ] Root `/` redirects to `/login`
-- [ ] `/login` — login form with dev credentials hint
-- [ ] `/patients` — protected list page with clinic name, patient table, Add/Edit/Delete
-- [ ] `/patients/new` — create form
-- [ ] `/patients/:id/edit` — edit form, pre-populated from API
+- [ ] `/login` — login form with dev credentials pre-filled
+- [ ] `/patients` — protected list page with clinic name, patient table, Add/Edit/Delete (all via modals)
+- [ ] Create/Edit handled via `PatientModal` (no separate routes)
+- [ ] Delete confirmation handled via `ConfirmModal` (no browser confirm dialog)
+- [ ] Toast notifications for success/error feedback
+- [ ] Responsive design — works on mobile and desktop
 - [ ] Unauthenticated access to patient routes redirects to `/login` via 401 interceptor
 
 ### CI
@@ -171,4 +175,6 @@ Database: PostgreSQL 15
 - API client: `frontend/src/api/client.ts`
 - Patient API: `frontend/src/api/patients.ts`
 - Types: `frontend/src/types/index.ts`
+- Toast utilities: `frontend/src/lib/toast.ts`
+- Error utilities: `frontend/src/utils/error.ts`
 - CI pipeline: `.github/workflows/ci.yml`

@@ -23,7 +23,10 @@ Built with Django REST Framework, React + TypeScript, PostgreSQL, and Docker.
 
 - Token-based login scoped to a clinic
 - Patient list showing all patients belonging to the logged-in user's clinic
-- Create, edit, and delete patients
+- Create, edit, and delete patients (via modals, not separate pages)
+- Delete confirmation modal (no browser dialogs)
+- Toast notifications for success/error feedback
+- Responsive design — works on mobile and desktop
 - Appointment and clinician data model (with M2M through table)
 - Auto-runs migrations and seeds test data on Docker startup
 - CI pipeline for backend tests and frontend type checking
@@ -151,7 +154,9 @@ patient-management/
 ├── frontend/
 │   ├── src/
 │   │   ├── api/                # Axios client + patient API functions
-│   │   ├── components/         # Login, PatientList, PatientForm
+│   │   ├── components/         # Login, PatientList, PatientModal, ConfirmModal, etc.
+│   │   ├── lib/                # Toast notifications
+│   │   ├── utils/              # Shared utilities (error handling, patient helpers)
 │   │   └── types/              # Shared TypeScript interfaces
 │   ├── Dockerfile
 │   └── vite.config.ts

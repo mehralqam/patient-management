@@ -27,11 +27,14 @@ docker compose up --build                   # full stack at http://localhost
 
 ## Key Patterns
 
-- **Form state in PatientForm:** uses `edits` (partial state) merged over `existing` data — no `useEffect` for initialising controlled inputs.
+- **Form state in PatientModal:** uses `edits` (partial state) merged over `existing` data — no `useEffect` for initialising controlled inputs.
 - **React Query:** query key is `['patients', page]` — always include `page` when invalidating or querying patients.
 - **Pagination:** DRF `PageNumberPagination`, page size 10. API returns `{count, next, previous, results:[]}`. Frontend manages `page` state in `PatientList`.
 - **Auth flow:** token in `localStorage` → `Authorization: Token <token>` header on every request → 401 interceptor clears token + `clinic_name` and redirects to `/login`.
 - **Route guards:** `PrivateRoute` in `App.tsx` checks `localStorage.getItem('token')` and redirects to `/login` if absent.
+- **Toast notifications:** Use `toasts` from `frontend/src/lib/toast.ts` for success/error feedback. Centralized messages for consistency.
+- **API error extraction:** Use `extractApiError` from `frontend/src/utils/error.ts` to parse DRF validation errors.
+- **Modals:** Create/edit uses `PatientModal`, delete confirmation uses `ConfirmModal`. No separate routes for forms.
 
 ## Code Style
 
@@ -59,12 +62,13 @@ docker compose up --build                   # full stack at http://localhost
 
 ## Do Not
 
-- Never use `localStorage` outside `frontend/src/api/client.ts` (auth interceptor) and `frontend/src/components/Login.tsx` (on login). Nowhere else.
+- Never use `localStorage` outside `frontend/src/api/client.ts` (auth interceptor) and `frontend/src/components/Login.tsx` (on login). `sessionStorage` is used only for the logout toast flag.
 - Never use raw SQL (`cursor.execute`) without a comment explaining why the ORM cannot handle it.
 - Never add a clinic ID as a writable field on any serializer — clinic is always assigned server-side from `request.user.clinic`.
 - Never call `setForm` or sync state from an effect when initialising a controlled form from fetched data — use the derived state pattern (`edits` merged over `existing`).
 - Never add session auth, JWT, or OAuth — token auth only.
 - Never add a signup endpoint or registration page — out of scope.
+- Never use `window.confirm()` or `window.alert()` — use `ConfirmModal` for confirmations and `toasts` for notifications.
 
 ## Testing Conventions
 
