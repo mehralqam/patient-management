@@ -68,3 +68,7 @@ jobs:
       - name: TypeScript check
         working-directory: frontend
         run: npx tsc --noEmit
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
