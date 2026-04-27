@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+echo "Running migrations..."
+python manage.py migrate --noinput
+
+echo "Seeding test data..."
+python manage.py seed
+
+echo "Starting server..."
+exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2

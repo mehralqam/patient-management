@@ -1,0 +1,49 @@
+import type { Patient } from '../types'
+import { getAge, getInitials } from '../utils/patient'
+import { Pencil, Trash2 } from 'lucide-react'
+
+interface Props {
+  patient: Patient
+  isDeleting: boolean
+  onEdit: () => void
+  onDelete: () => void
+}
+
+export default function PatientListItem({ patient, isDeleting, onEdit, onDelete }: Props) {
+  return (
+    <tr className="hover:bg-slate-50 transition-colors">
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center text-xs font-semibold shrink-0">
+            {getInitials(patient.first_name, patient.last_name)}
+          </div>
+          <span className="font-medium text-slate-900">
+            {patient.first_name} {patient.last_name}
+          </span>
+        </div>
+      </td>
+      <td className="px-6 py-4 text-slate-600 tabular-nums">{patient.date_of_birth}</td>
+      <td className="px-6 py-4 text-slate-600">{getAge(patient.date_of_birth)} yrs</td>
+      <td className="px-6 py-4">
+        <div className="flex items-center justify-end gap-1">
+          <button
+            onClick={onEdit}
+            disabled={isDeleting}
+            className="flex items-center gap-1.5 text-slate-500 hover:text-sky-600 hover:bg-sky-50 disabled:opacity-40 disabled:pointer-events-none px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            Edit
+          </button>
+          <button
+            onClick={onDelete}
+            disabled={isDeleting}
+            className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-40 disabled:pointer-events-none px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </td>
+    </tr>
+  )
+}
