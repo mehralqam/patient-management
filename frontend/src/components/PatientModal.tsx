@@ -5,6 +5,8 @@ import type { CreatePatientDto } from '../types'
 import type { AxiosError } from 'axios'
 import Modal from './Modal'
 import Spinner from './Spinner'
+import { toasts } from '../lib/toast'
+import { extractApiError } from '../utils/error'
 
 interface Props {
   patientId?: number
@@ -35,7 +37,20 @@ export default function PatientModal({ patientId, onClose }: Props) {
       isEdit ? updatePatient(patientId!, data) : createPatient(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patients'] })
+      if (isEdit) {
+        toasts.patientUpdated()
+      } else {
+        toasts.patientCreated()
+      }
       onClose()
+    },
+    onError: (error) => {
+      const detail = extractApiError(error)
+      if (isEdit) {
+        toasts.updateError(detail)
+      } else {
+        toasts.createError(detail)
+      }
     },
   })
 
@@ -56,8 +71,8 @@ export default function PatientModal({ patientId, onClose }: Props) {
           <Spinner />
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-6 py-5">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-5 px-4 sm:px-6 py-4 sm:py-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 First Name
@@ -106,20 +121,20 @@ export default function PatientModal({ patientId, onClose }: Props) {
             </p>
           )}
 
-          <div className="flex gap-3 pt-1">
-            <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
-            >
-              {mutation.isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Patient'}
-            </button>
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              className="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={mutation.isPending}
+              className="w-full sm:flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+            >
+              {mutation.isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Patient'}
             </button>
           </div>
         </form>

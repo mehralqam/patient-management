@@ -9,7 +9,9 @@ import PatientListItem from './PatientListItem'
 import PaginatedTable from './PaginatedTable'
 import Navbar from './Navbar'
 import PatientModal from './PatientModal'
+import ConfirmModal from './ConfirmModal'
 import { PAGE_SIZE } from '../constants'
+import { toasts } from '../lib/toast'
 
 const PATIENT_COLUMNS = ['Patient', 'Date of Birth', 'Age', '']
 
@@ -18,6 +20,7 @@ export default function PatientList() {
   const [page, setPage] = useState(1)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | undefined>(undefined)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['patients', page],
@@ -28,7 +31,13 @@ export default function PatientList() {
     mutationFn: deletePatient,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patients'] })
+      toasts.patientDeleted()
+      setDeleteConfirmId(null)
       if (data?.results.length === 1 && page > 1) setPage(page - 1)
+    },
+    onError: () => {
+      toasts.deleteError()
+      setDeleteConfirmId(null)
     },
   })
 
@@ -37,6 +46,10 @@ export default function PatientList() {
   const openCreate = () => { setEditingId(undefined); setModalOpen(true) }
   const openEdit = (id: number) => { setEditingId(id); setModalOpen(true) }
   const closeModal = () => setModalOpen(false)
+
+  const patientToDelete = deleteConfirmId !== null
+    ? data?.results.find((p) => p.id === deleteConfirmId)
+    : null
 
   if (isLoading) return <Spinner />
   if (error) return <ErrorMessage message={(error as Error).message} />
@@ -49,11 +62,11 @@ export default function PatientList() {
     <div className="min-h-screen bg-slate-50">
       <Navbar clinicName={clinicName} />
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Patients</h1>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">Patients</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               {clinicName
                 ? `${totalCount} patient${totalCount !== 1 ? 's' : ''} at ${clinicName}`
                 : `${totalCount} patient${totalCount !== 1 ? 's' : ''} on record`}
@@ -61,7 +74,7 @@ export default function PatientList() {
           </div>
           <button
             onClick={openCreate}
-            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium px-4 py-2.5 sm:py-2 rounded-lg transition-colors w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
             Add Patient
@@ -102,11 +115,7 @@ export default function PatientList() {
                   patient={patient}
                   isDeleting={deletingId === patient.id}
                   onEdit={() => openEdit(patient.id)}
-                  onDelete={() => {
-                    if (window.confirm('Delete this patient?')) {
-                      deleteMutation.mutate(patient.id)
-                    }
-                  }}
+                  onDelete={() => setDeleteConfirmId(patient.id)}
                 />
               ))}
             </PaginatedTable>
@@ -116,6 +125,22 @@ export default function PatientList() {
 
       {modalOpen && (
         <PatientModal patientId={editingId} onClose={closeModal} />
+      )}
+
+      {deleteConfirmId !== null && (
+        <ConfirmModal
+          title="Delete Patient"
+          message={
+            patientToDelete
+              ? `Are you sure you want to delete ${patientToDelete.first_name} ${patientToDelete.last_name}? This action cannot be undone.`
+              : 'Are you sure you want to delete this patient? This action cannot be undone.'
+          }
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={deleteMutation.isPending}
+          onConfirm={() => deleteMutation.mutate(deleteConfirmId)}
+          onCancel={() => setDeleteConfirmId(null)}
+        />
       )}
     </div>
   )

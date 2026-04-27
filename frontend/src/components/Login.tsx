@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Users } from 'lucide-react'
 import client from '../api/client'
+import { toasts } from '../lib/toast'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -9,6 +10,13 @@ export default function Login() {
   const [password, setPassword] = useState('testpass123')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (sessionStorage.getItem('just_logged_out')) {
+      sessionStorage.removeItem('just_logged_out')
+      toasts.logoutSuccess()
+    }
+  }, [])
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
@@ -18,9 +26,11 @@ export default function Login() {
       const res = await client.post<{ token: string; clinic_name: string | null }>('auth/login/', { username, password })
       localStorage.setItem('token', res.data.token)
       if (res.data.clinic_name) localStorage.setItem('clinic_name', res.data.clinic_name)
+      toasts.loginSuccess()
       navigate('/patients')
     } catch {
       setError('Invalid username or password')
+      toasts.loginError()
     } finally {
       setLoading(false)
     }

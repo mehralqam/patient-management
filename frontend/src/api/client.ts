@@ -29,6 +29,7 @@ export function getClinicName(): string | null {
 export function logout(): void {
   localStorage.removeItem('token');
   localStorage.removeItem('clinic_name');
+  sessionStorage.setItem('just_logged_out', '1');
   window.location.href = '/login';
 }
 
