@@ -2,13 +2,16 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPatients, deletePatient } from '../api/patients'
 import { getClinicName } from '../api/client'
-import { Plus, UserRound, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, UserRound } from 'lucide-react'
 import Spinner from './Spinner'
 import ErrorMessage from './ErrorMessage'
 import PatientListItem from './PatientListItem'
+import PaginatedTable from './PaginatedTable'
 import Navbar from './Navbar'
 import PatientModal from './PatientModal'
 import { PAGE_SIZE } from '../constants'
+
+const PATIENT_COLUMNS = ['Patient', 'Date of Birth', 'Age', '']
 
 export default function PatientList() {
   const queryClient = useQueryClient()
@@ -83,59 +86,30 @@ export default function PatientList() {
               </button>
             </div>
           ) : (
-            <>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Patient</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Date of Birth</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Age</th>
-                    <th className="px-6 py-3" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {patients.map((patient) => (
-                    <PatientListItem
-                      key={patient.id}
-                      patient={patient}
-                      isDeleting={deletingId === patient.id}
-                      onEdit={() => openEdit(patient.id)}
-                      onDelete={() => {
-                        if (window.confirm('Delete this patient?')) {
-                          deleteMutation.mutate(patient.id)
-                        }
-                      }}
-                    />
-                  ))}
-                </tbody>
-              </table>
-
-              {totalPages > 1 && (
-                <div className="border-t border-slate-200 px-6 py-3 flex items-center justify-between">
-                  <p className="text-xs text-slate-500">
-                    Page {page} of {totalPages} &mdash; {totalCount} total
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setPage(page - 1)}
-                      disabled={!data?.previous}
-                      className="flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none border border-slate-200 hover:border-slate-300 px-2.5 py-1.5 rounded-lg transition-colors"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      Prev
-                    </button>
-                    <button
-                      onClick={() => setPage(page + 1)}
-                      disabled={!data?.next}
-                      className="flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none border border-slate-200 hover:border-slate-300 px-2.5 py-1.5 rounded-lg transition-colors"
-                    >
-                      Next
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
+            <PaginatedTable
+              columns={PATIENT_COLUMNS}
+              page={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              hasPrev={!!data?.previous}
+              hasNext={!!data?.next}
+              onPrev={() => setPage(page - 1)}
+              onNext={() => setPage(page + 1)}
+            >
+              {patients.map((patient) => (
+                <PatientListItem
+                  key={patient.id}
+                  patient={patient}
+                  isDeleting={deletingId === patient.id}
+                  onEdit={() => openEdit(patient.id)}
+                  onDelete={() => {
+                    if (window.confirm('Delete this patient?')) {
+                      deleteMutation.mutate(patient.id)
+                    }
+                  }}
+                />
+              ))}
+            </PaginatedTable>
           )}
         </div>
       </main>
