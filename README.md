@@ -124,11 +124,12 @@ pip install -r requirements.txt
 python manage.py test
 ```
 
-**Frontend type check and lint:**
+**Frontend type check, lint, and tests:**
 
 ```bash
 cd frontend && npx tsc --noEmit
 cd frontend && npm run lint
+cd frontend && npm test
 ```
 
 **Backend lint (via Docker — no local install needed):**
@@ -164,9 +165,10 @@ patient-management/
 │   │   ├── views.py            # PatientViewSet (clinic-scoped)
 │   │   ├── serializers.py      # Read + Write serializers
 │   │   ├── urls.py             # Patient router
+│   │   └── tests/              # test_models, test_serializers, test_views, helpers
 │   │   └── management/
 │   │       └── commands/
-│   │           └── seed.py     # Test data seeder
+│   │           └── seed.py     # Idempotent test data seeder
 │   ├── config/
 │   │   ├── settings.py
 │   │   └── urls.py             # Auth + clinic routes
@@ -176,7 +178,8 @@ patient-management/
 ├── frontend/
 │   ├── src/
 │   │   ├── api/                # Axios client + patient API functions
-│   │   ├── components/         # Login, PatientList, PatientModal, ConfirmModal, etc.
+│   │   ├── components/         # Login, PatientList, PatientModal, Modal, PaginatedTable, etc.
+│   │   │                       # *.test.tsx — Vitest + React Testing Library tests
 │   │   ├── lib/                # Toast notifications
 │   │   ├── utils/              # Shared utilities (error handling, patient helpers)
 │   │   └── types/              # Shared TypeScript interfaces
@@ -230,4 +233,4 @@ Authorization: Token <token>
 GitHub Actions runs on push and PRs to `main`:
 
 - **Backend** — lints with `ruff`, then runs Django tests against a PostgreSQL service container
-- **Frontend** — TypeScript type check (`tsc --noEmit`), then ESLint (`npm run lint`)
+- **Frontend** — TypeScript type check (`tsc --noEmit`), ESLint (`npm run lint`), then Vitest component tests (`npm test`)
